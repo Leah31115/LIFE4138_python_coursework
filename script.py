@@ -70,33 +70,25 @@ GvD_data["log_baseMean"] = -np.log(GvD_data["baseMean"])
 # Assume significance occurs when p-value < 0.05 and log2foldchange >= 2.00
 # For A vs D Deseq
 # Upregulated genes
-print("\nHere are the significant A vs D deseq up-regulated genes with adjusted p-value < 0.05 and log2FoldChange >= 2.00:")
 AvD_up_reg = AvD_data[(AvD_data["log2FoldChange"] >= 2) & (AvD_data["padj"] < 0.05)]
-print(AvD_up_reg)
-# Save AvD up-regulated genes as a tsv file
-AvD_up_reg.to_csv(new_dir / "AvsD_significant_upregulated_genes.tsv", index=False, header=True, sep='\t')
+count_AvD_upreg = len(AvD_up_reg)
+print(f"\nThere are {count_AvD_upreg} upregulated genes for the AvsD treatment group.")
 
 # Downregulated genes
-print("\nHere are the significant A vs D deseq down-regulated genes with adjusted p-value < 0.05 and log2FoldChange <= -2.00:")
 AvD_down_reg = AvD_data[(AvD_data["log2FoldChange"] <= -2) & (AvD_data["padj"] < 0.05)]
-print(AvD_down_reg)
-# Save AvD down-regulated genes as a tsv file
-AvD_down_reg.to_csv(new_dir / "AvsD_significant_downregulated_genes.tsv", index=False, header=True, sep='\t')
+count_AvD_downreg = len(AvD_down_reg)
+print(f"There are {count_AvD_downreg} downregulated genes for the AvsD treatment group.")
 
 # For G vs D Deseq
 # Upregulated genes
-print("\nHere are the significant G vs D deseq up-regulated genes with adjusted p-value < 0.05 and log2FoldChange >= 2.00:")
 GvD_up_reg = GvD_data[(GvD_data["log2FoldChange"] >= 2) & (GvD_data["padj"] < 0.05)]
-print(GvD_up_reg)
-# Save GvD up-regulated genes as a tsv file
-GvD_up_reg.to_csv(new_dir / "GvsD_significant_upregulated_genes.tsv", index=False, header=True, sep='\t')
+count_GvD_upreg = len(GvD_up_reg)
+print(f"There are {count_GvD_upreg} upregulated genes for the GvsD treatment group.")
 
 # Downregulated genes
-print("\nHere are the significant G vs D deseq down-regulated genes with adjusted p-value < 0.05 and log2FoldChange <= -2.00:")
 GvD_down_reg = GvD_data[(GvD_data["log2FoldChange"] <= -2) & (GvD_data["padj"] < 0.05)]
-print(GvD_down_reg)
-# Save GvD downregulated genes as a tsv file
-GvD_down_reg.to_csv(new_dir / "GvsD_significant_downregulated_genes.tsv", index=False, header=True, sep='\t')
+count_GvD_downreg = len(GvD_down_reg)
+print(f"There are {count_GvD_downreg} downregulated genes for the GvsD treatment group.")
 
 
 # Summary of p-values and log fold changes across all genes for each condition.
@@ -283,8 +275,6 @@ for name in cluster_values["gene_id"]:
 cluster_values_df = pd.DataFrame.from_dict(cluster_values)
 # Index the gene_id
 cluster_values_df = cluster_values_df.set_index("gene_id")
-print("\nHere are the heatmap values")
-print(cluster_values_df)
 
 # Plot heatmap
 sns.heatmap(cluster_values_df, annot=True)
