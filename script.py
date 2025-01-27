@@ -11,12 +11,7 @@ import sys
 """
 This script will only accept two deseq .tsv files. Required data columns include: "gene_id", "baseMean", "log2FoldChange", "lfcSE", "pvalue", "padj"
 All generated files and plots will be saved automatically into a newly made folder titled "gene_analysis_output" within your working directory.
-Significantly upregulated and downregulated genes for each treatment conditions will be saved each individually as separate tsv files titled:
-- AvsD_significant_upregulated_genes.tsv
-- AvsD_significant_downregulated_genes.tsv
-- GvsD_significant_upregulated_genes.tsv
-- GvsD_significant_downregulated_genes.tsv
-
+The number of upregulated and downregulated genes for both treatments will be calculated.
 A statistical summary of p-values and log fold changes for all genes are saved as separate tsv files for both conditions titled:
 - AvsD_statistical_summary.tsv
 - GvsD_statistical_summary.tsv
