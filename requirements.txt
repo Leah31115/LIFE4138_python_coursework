@@ -1,0 +1,6 @@
+# For python 3.12
+matplotlib
+pandas
+numpy
+seaborn
+scipy
