@@ -62,7 +62,7 @@ GvD_data["log_baseMean"] = -np.log(GvD_data["baseMean"])
 
 
 # Number of significantly upregulated and downregulated genes (based on p-value and fold change thresholds) for each comparison.
-# Assume significance occurs when p-value < 0.05 and log2foldchange >= 2.00
+# Assume significance occurs when adjusted p-value < 0.05 and log2foldchange >= 2.00
 # For A vs D Deseq
 # Upregulated genes
 AvD_up_reg = AvD_data[(AvD_data["log2FoldChange"] >= 2) & (AvD_data["padj"] < 0.05)]
@@ -90,18 +90,20 @@ print(f"There are {count_GvD_downreg} downregulated genes for the GvsD treatment
 # For A vs D Deseq
 subset_AvD_data = AvD_data[["log2FoldChange", "pvalue", "padj"]]
 summary_AvD_data = subset_AvD_data.describe()
+round_summary_AvD_data = summary_AvD_data.round({"log2FoldChange": 3}) # Round log2FoldChange to 3dp
 print("\nHere is the summary of p-values and log-fold changes for all genes for A vs D deseq:")
-print(summary_AvD_data)
+print(round_summary_AvD_data)
 # Save statistical summary
-summary_AvD_data.to_csv(new_dir / "AvsD_statistical_summary.tsv", index=False, header=True, sep='\t')
+round_summary_AvD_data.to_csv(new_dir / "AvsD_statistical_summary.tsv", index=False, header=True, sep='\t')
 
 # For G vs D Deseq
 subset_GvD_data = GvD_data[["log2FoldChange", "pvalue", "padj"]]
 summary_GvD_data = subset_GvD_data.describe()
+round_summary_GvD_data = summary_GvD_data.round({"log2FoldChange": 3}) # Round log2FoldChange to 3dp
 print("\nHere is the summary of p-values and log-fold changes for all genes for G vs D deseq:")
-print(summary_GvD_data.describe())
+print(round_summary_GvD_data)
 # Save statistical summary
-summary_GvD_data.to_csv(new_dir / "GvsD_statistical_summary.tsv", index=False, header=True, sep='\t')
+round_summary_GvD_data.to_csv(new_dir / "GvsD_statistical_summary.tsv", index=False, header=True, sep='\t')
 
 
 # Generate volcano plots to visualize the significance and magnitude of changes in gene expression for each condition.
