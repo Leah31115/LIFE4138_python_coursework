@@ -107,7 +107,7 @@ round_summary_GvD_data.to_csv(new_dir / "condition1_statistical_summary.tsv", in
 
 # Set threshold for the top significant genes
 # Attempt at making a dynamic threshold which is flexible with other datasets
-top_padj_threshold = (round_summary_GvD_data["log2FoldChange"].iloc[6] * round_summary_GvD_data["log2FoldChange"].iloc[2] * 10)**2 
+top_padj_threshold = (round_summary_GvD_data["log2FoldChange"].iloc[6] * round_summary_GvD_data["log2FoldChange"].iloc[2] * 10)**2 # 75% * mean * 10 and squared to make number positive
 
 # Generate volcano plots to visualize the significance and magnitude of changes in gene expression for each condition.
 # For A vs D Deseq
