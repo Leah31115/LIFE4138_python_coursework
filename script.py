@@ -13,8 +13,8 @@ This script will only accept two deseq .tsv files. Required data columns include
 All generated files and plots will be saved automatically into a newly made folder titled "gene_analysis_output" within your working directory.
 The number of upregulated and downregulated genes for both treatments will be calculated.
 A statistical summary of p-values and log fold changes for all genes are saved as separate tsv files for both conditions titled:
-- AvsD_statistical_summary.tsv
-- GvsD_statistical_summary.tsv
+- condition1_statistical_summary.tsv
+- condition2_statistical_summary.tsv
 
 The top significantly upregulated and downregulated genes for both conditions is saved as a file titled top_differentially_expressed_genes.tsv
 
@@ -23,7 +23,7 @@ The plots generated include: volcano plots, MA plots and histograms of p-values.
 # Obtain the file path of the TSV files
 Tk().withdraw() # Prevent using tkinter's full GUI since it's not needed
 # Open A_vs_D_file
-print("Please select your A_vs_D file")
+print("Please select a DESeq DGEA file (condition 1)")
 AvD_file_path_tk = askopenfilename(filetypes=[("tab separated values", ".tsv")]) # Open a dialog box to obtain the file A vs D Deseq TSV filepath as a string. Only allows the user to select .tsv files to prevent errors
 AvD_file_path = Path(AvD_file_path_tk) # Handle file path using pathlib. Used later to make a directory
 
@@ -35,7 +35,7 @@ except FileNotFoundError:
     sys.exit()
 
 # Open G_vs_D file
-print("Please select your G_vs_D file")
+print("Please select another DESeq DGEA file you wish to compare against (condition 2)")
 GvD_file_path_tk = askopenfilename(filetypes=[("tab separated values", ".tsv")]) # Open a dialog box to obtain the file G vs D Deseq TSV filepath as a string. Only allows the user to select .tsv files to prevent errors
 
 # Handle error if no file is selected
@@ -67,23 +67,23 @@ GvD_data["log_baseMean"] = -np.log(GvD_data["baseMean"])
 # Upregulated genes
 AvD_up_reg = AvD_data[(AvD_data["log2FoldChange"] >= 2) & (AvD_data["padj"] < 0.05)]
 count_AvD_upreg = len(AvD_up_reg)
-print(f"\nThere are {count_AvD_upreg} upregulated genes for the AvsD treatment group.")
+print(f"\nThere are {count_AvD_upreg} upregulated genes for condition 1.")
 
 # Downregulated genes
 AvD_down_reg = AvD_data[(AvD_data["log2FoldChange"] <= -2) & (AvD_data["padj"] < 0.05)]
 count_AvD_downreg = len(AvD_down_reg)
-print(f"There are {count_AvD_downreg} downregulated genes for the AvsD treatment group.")
+print(f"There are {count_AvD_downreg} downregulated genes for condition 1.")
 
 # For G vs D Deseq
 # Upregulated genes
 GvD_up_reg = GvD_data[(GvD_data["log2FoldChange"] >= 2) & (GvD_data["padj"] < 0.05)]
 count_GvD_upreg = len(GvD_up_reg)
-print(f"There are {count_GvD_upreg} upregulated genes for the GvsD treatment group.")
+print(f"There are {count_GvD_upreg} upregulated genes for condition 2.")
 
 # Downregulated genes
 GvD_down_reg = GvD_data[(GvD_data["log2FoldChange"] <= -2) & (GvD_data["padj"] < 0.05)]
 count_GvD_downreg = len(GvD_down_reg)
-print(f"There are {count_GvD_downreg} downregulated genes for the GvsD treatment group.")
+print(f"There are {count_GvD_downreg} downregulated genes for condition 2.")
 
 
 # Summary of p-values and log fold changes across all genes for each condition.
@@ -91,19 +91,19 @@ print(f"There are {count_GvD_downreg} downregulated genes for the GvsD treatment
 subset_AvD_data = AvD_data[["log2FoldChange", "pvalue", "padj"]]
 summary_AvD_data = subset_AvD_data.describe()
 round_summary_AvD_data = summary_AvD_data.round({"log2FoldChange": 3}) # Round log2FoldChange to 3dp
-print("\nHere is the summary of p-values and log-fold changes for all genes for A vs D deseq:")
+print("\nHere is the summary of p-values and log-fold changes for all genes for condition 1:")
 print(round_summary_AvD_data)
 # Save statistical summary
-round_summary_AvD_data.to_csv(new_dir / "AvsD_statistical_summary.tsv", index=False, header=True, sep='\t')
+round_summary_AvD_data.to_csv(new_dir / "condition1_statistical_summary.tsv", index=False, header=True, sep='\t')
 
 # For G vs D Deseq
 subset_GvD_data = GvD_data[["log2FoldChange", "pvalue", "padj"]]
 summary_GvD_data = subset_GvD_data.describe()
 round_summary_GvD_data = summary_GvD_data.round({"log2FoldChange": 3}) # Round log2FoldChange to 3dp
-print("\nHere is the summary of p-values and log-fold changes for all genes for G vs D deseq:")
+print("\nHere is the summary of p-values and log-fold changes for all genes for condition 2:")
 print(round_summary_GvD_data)
 # Save statistical summary
-round_summary_GvD_data.to_csv(new_dir / "GvsD_statistical_summary.tsv", index=False, header=True, sep='\t')
+round_summary_GvD_data.to_csv(new_dir / "condition1_statistical_summary.tsv", index=False, header=True, sep='\t')
 
 
 # Generate volcano plots to visualize the significance and magnitude of changes in gene expression for each condition.
@@ -112,10 +112,10 @@ round_summary_GvD_data.to_csv(new_dir / "GvsD_statistical_summary.tsv", index=Fa
 plt.scatter(x=AvD_data["log2FoldChange"], y=AvD_data["neg_log10_padj"], color="grey", label="Not significant", s=1.5)
 plt.scatter(x=AvD_up_reg["log2FoldChange"], y=AvD_up_reg["neg_log10_padj"], color="orange", label="Up-regulated")
 plt.scatter(x=AvD_down_reg["log2FoldChange"], y=AvD_down_reg["neg_log10_padj"], color="blue", label="Down-regulated")
-plt.title("A vs D deseq Volcano Plot", fontsize=15)
+plt.title("Condition 1 Volcano Plot", fontsize=15)
 plt.xlabel("Log2 Fold Change")
-plt.ylabel("-Log10 False Discovery Rate")
-plt.axhline(2, color="black", linestyle="--")
+plt.ylabel("-Log(adjusted pvalue)")
+plt.axhline(70, color="black", linestyle="--")
 plt.axvline(2, color="black", linestyle="--")
 plt.axvline(-2, color="black", linestyle="--")
 plt.legend()
@@ -130,10 +130,10 @@ AvD_down_reg_lab = AvD_data[(AvD_data["log2FoldChange"] <= -5) & (AvD_data["padj
 
 # Annotate gene names at the extreme horizontal ends along the x-axis
 for i, gene in enumerate(AvD_up_reg_lab["gene_id"]):
-    plt.annotate(gene, (AvD_up_reg_lab["log2FoldChange"].iloc[i], AvD_up_reg_lab["neg_log10_padj"].iloc[i]), size=5)
+    plt.annotate(gene, (AvD_up_reg_lab["log2FoldChange"].iloc[i], AvD_up_reg_lab["neg_log10_padj"].iloc[i]), size=7)
 
 for i, gene in enumerate(AvD_down_reg_lab["gene_id"]):
-    plt.annotate(gene, (AvD_down_reg_lab["log2FoldChange"].iloc[i], AvD_down_reg_lab["neg_log10_padj"].iloc[i]), size=5)
+    plt.annotate(gene, (AvD_down_reg_lab["log2FoldChange"].iloc[i], AvD_down_reg_lab["neg_log10_padj"].iloc[i]), size=7)
 
 # Annotate gene names at the extreme top, along the y-axis, with large neg_log10_padj values
 # Filter significant up-regulated and down-regulated genes with large negative log10 adjusted p values
@@ -141,9 +141,9 @@ AvD_reg_lab_top = AvD_data[AvD_data["neg_log10_padj"] >= 70]
 
 # Annotate gene names along the y-axis
 for i, gene in enumerate(AvD_reg_lab_top["gene_id"]):
-    plt.annotate(gene, (AvD_reg_lab_top["log2FoldChange"].iloc[i], AvD_reg_lab_top["neg_log10_padj"].iloc[i]), size=5)
+    plt.annotate(gene, (AvD_reg_lab_top["log2FoldChange"].iloc[i], AvD_reg_lab_top["neg_log10_padj"].iloc[i]), size=7)
 
-plt.savefig(new_dir / "AvD_volcano_plot.png") # save fig must be before show else the images will be empty
+plt.savefig(new_dir / "condition1_volcano_plot.png") # save fig must be before show else the images will be empty
 plt.show()
 
 
@@ -152,10 +152,10 @@ plt.show()
 plt.scatter(x=GvD_data["log2FoldChange"], y=GvD_data["neg_log10_padj"], color="grey", label="Not significant", s=1.5)
 plt.scatter(x=GvD_up_reg["log2FoldChange"], y=GvD_up_reg["neg_log10_padj"], color="orange", label="Up-regulated")
 plt.scatter(x=GvD_down_reg["log2FoldChange"], y=GvD_down_reg["neg_log10_padj"], color="blue", label="Down-regulated")
-plt.title("G vs D deseq Volcano Plot", fontsize=15)
+plt.title("Condition 2 Volcano Plot", fontsize=15)
 plt.xlabel("Log2 Fold Change")
-plt.ylabel("-Log10 False Discovery Rate")
-plt.axhline(2, color="black", linestyle="--")
+plt.ylabel("-Log(adjusted pvalue)")
+plt.axhline(70, color="black", linestyle="--")
 plt.axvline(2, color="black", linestyle="--")
 plt.axvline(-2, color="black", linestyle="--")
 plt.legend()
@@ -170,10 +170,10 @@ GvD_down_reg_lab = GvD_data[(GvD_data["log2FoldChange"] <= -5) & (GvD_data["padj
 
 # Annotate gene names at the extreme horizontal ends along the x-axis
 for i, gene in enumerate(GvD_up_reg_lab["gene_id"]):
-    plt.annotate(gene, (GvD_up_reg_lab["log2FoldChange"].iloc[i], GvD_up_reg_lab["neg_log10_padj"].iloc[i]), size=5)
+    plt.annotate(gene, (GvD_up_reg_lab["log2FoldChange"].iloc[i], GvD_up_reg_lab["neg_log10_padj"].iloc[i]), size=7)
 
 for i, gene in enumerate(GvD_down_reg_lab["gene_id"]):
-    plt.annotate(gene, (GvD_down_reg_lab["log2FoldChange"].iloc[i], GvD_down_reg_lab["neg_log10_padj"].iloc[i]), size=5)
+    plt.annotate(gene, (GvD_down_reg_lab["log2FoldChange"].iloc[i], GvD_down_reg_lab["neg_log10_padj"].iloc[i]), size=7)
 
 # Annotate gene names at the extreme top, along the y-axis, with large neg_log10_padj values
 # Filter significant up-regulated and down-regulated genes with large negative log10 p-adjusted values
@@ -181,9 +181,9 @@ GvD_reg_lab_top = GvD_data[GvD_data["neg_log10_padj"] >= 70]
 
 # Annotate gene names along the y-axis
 for i, gene in enumerate(GvD_reg_lab_top["gene_id"]):
-    plt.annotate(gene, (GvD_reg_lab_top["log2FoldChange"].iloc[i], GvD_reg_lab_top["neg_log10_padj"].iloc[i]), size=5)
+    plt.annotate(gene, (GvD_reg_lab_top["log2FoldChange"].iloc[i], GvD_reg_lab_top["neg_log10_padj"].iloc[i]), size=7)
 
-plt.savefig(new_dir / "GvD_volcano_plot.png")
+plt.savefig(new_dir / "condition2_volcano_plot.png")
 plt.show()
 
 
@@ -194,9 +194,9 @@ plt.scatter(x=AvD_up_reg["log_baseMean"], y=AvD_up_reg["log2FoldChange"], color=
 plt.scatter(x=AvD_down_reg["log_baseMean"], y=AvD_down_reg["log2FoldChange"], color="blue", label="Down-regulated")
 plt.xlabel("Log Mean expression")
 plt.ylabel("Log2 Fold Change")
-plt.title("MA plot of the relationship between the A vs D \n deseq gene log mean expression and log fold change", fontsize=10)
+plt.title("MA plot of the relationship between deseq gene log mean expression and log fold change for condition 1", fontsize=13)
 plt.legend()
-plt.savefig(new_dir / "AvD_MAplot.png")
+plt.savefig(new_dir / "condition1_MAplot.png")
 plt.show()
 
 # MA plot for G vs D Deseq
@@ -205,9 +205,9 @@ plt.scatter(x=GvD_up_reg["log_baseMean"], y=GvD_up_reg["log2FoldChange"], color=
 plt.scatter(x=GvD_down_reg["log_baseMean"], y=GvD_down_reg["log2FoldChange"], color="blue", label="Down-regulated")
 plt.xlabel("Log Mean expression")
 plt.ylabel("Log2 Fold Change")
-plt.title("MA plot of the relationship between the G vs D \n deseq gene log mean expression and log fold change", fontsize=10)
+plt.title("MA plot of the relationship between deseq gene log mean expression and log fold change for condition 2", fontsize=13)
 plt.legend()
-plt.savefig(new_dir / "GvD_MAplot.png")
+plt.savefig(new_dir / "condition2_MAplot.png")
 plt.show()
 
 
@@ -216,16 +216,16 @@ plt.show()
 plt.hist(AvD_data['padj'], bins=20, color="blue", ec="black")
 plt.xlabel("Adjusted p-values")
 plt.ylabel("Frequency")
-plt.title("Histogram of A vs D deseq gene p-values", fontsize=15)
-plt.savefig(new_dir / "AvD_gene_pvalue_histogram.png")
+plt.title("Histogram of condition 1 adjusted p-value frequencies", fontsize=15)
+plt.savefig(new_dir / "condition1_gene_pvalue_histogram.png")
 plt.show()
 
 # For G vs D Deseq
 plt.hist(GvD_data['padj'], bins=20, color="blue", ec="black")
 plt.xlabel("Adjusted p-values")
 plt.ylabel("Frequency")
-plt.title("Histogram of G vs D deseq gene p-values", fontsize=15)
-plt.savefig(new_dir / "GvD_gene_pvalue_histogram.png")
+plt.title("Histogram of condition 2 adjusted p-value frequencies", fontsize=15)
+plt.savefig(new_dir / "condition2_gene_pvalue_histogram.png")
 plt.show()
 
 
@@ -235,11 +235,11 @@ plt.show()
 # Assign treatment group categories as new columns to the data frames for genes with high statistical significance
 subset_AvD_reg_top = AvD_reg_lab_top[["gene_id", "log2FoldChange", "pvalue", "padj"]]
 subset_AvD_reg_top = subset_AvD_reg_top.copy() # Made a copy to stop the warning which did not like editing (adding a column) after the dataframe had already been sliced
-subset_AvD_reg_top["treatment_group"] = 'AvD' 
+subset_AvD_reg_top["treatment_group"] = 'Condition_1' 
 
 subset_GvD_reg_top = GvD_reg_lab_top[["gene_id", "log2FoldChange", "pvalue", "padj"]]
 subset_GvD_reg_top = subset_GvD_reg_top.copy() # Made a copy to stop the warning which did not like editing (adding a column) after the dataframe had already been sliced
-subset_GvD_reg_top["treatment_group"] = 'GvD' 
+subset_GvD_reg_top["treatment_group"] = 'Condition_2' 
 
 # Combine both significantly up-regulated and down-regulated genes into one dataframe for both conditions
 data_frames = [subset_AvD_reg_top, subset_GvD_reg_top]
@@ -256,17 +256,17 @@ unique_genes = sig_genes["gene_id"].unique() # Remove duplicates present within 
 
 # Make a dataframe of significantly expressed gene names with their log2FoldChange values for each condition
 cluster_values = {"gene_id": unique_genes,
-                "AvD_log2FoldChange": [], "GvD_log2FoldChange": []}
+                "Condition1_log2FoldChange": [], "Condition2_log2FoldChange": []}
 
 # Extract the gene information for both treatment groups
 for name in cluster_values["gene_id"]:
     AvD_current_row = AvD_data[AvD_data["gene_id"] == name] # find row with the gene_id = name in AvD data
     AvD_log2FoldChange_value = AvD_current_row["log2FoldChange"].iloc[0] # obtain the value from the located row
-    cluster_values["AvD_log2FoldChange"].append(AvD_log2FoldChange_value) # append value to the list for the "AvD_log2FoldChange" key within the dictionary
+    cluster_values["Condition1_log2FoldChange"].append(AvD_log2FoldChange_value) # append value to the list for the "AvD_log2FoldChange" key within the dictionary
 
     GvD_current_row = GvD_data[GvD_data["gene_id"] == name] # find row with the gene_id = name in GvD data
     GvD_log2FoldChange_value = GvD_current_row["log2FoldChange"].iloc[0] # obtain the value from the located row
-    cluster_values["GvD_log2FoldChange"].append(GvD_log2FoldChange_value) # append value to the list for the "GvD_log2FoldChange" key within the dictionary
+    cluster_values["Condition2_log2FoldChange"].append(GvD_log2FoldChange_value) # append value to the list for the "GvD_log2FoldChange" key within the dictionary
 
 # Convert dictionary into dataframe
 cluster_values_df = pd.DataFrame.from_dict(cluster_values)
