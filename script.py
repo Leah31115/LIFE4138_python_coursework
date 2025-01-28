@@ -105,6 +105,9 @@ print(round_summary_GvD_data)
 # Save statistical summary
 round_summary_GvD_data.to_csv(new_dir / "condition1_statistical_summary.tsv", index=False, header=True, sep='\t')
 
+# Set threshold for the top significant genes
+# Attempt at making a dynamic threshold which is flexible with other datasets
+top_padj_threshold = (round_summary_GvD_data["log2FoldChange"].iloc[6] * round_summary_GvD_data["log2FoldChange"].iloc[2] * 10)**2 
 
 # Generate volcano plots to visualize the significance and magnitude of changes in gene expression for each condition.
 # For A vs D Deseq
@@ -115,7 +118,7 @@ plt.scatter(x=AvD_down_reg["log2FoldChange"], y=AvD_down_reg["neg_log10_padj"], 
 plt.title("Condition 1 Volcano Plot", fontsize=15)
 plt.xlabel("Log2 Fold Change")
 plt.ylabel("-Log(adjusted pvalue)")
-plt.axhline(70, color="black", linestyle="--")
+plt.axhline(top_padj_threshold, color="black", linestyle="--") # top significantly expressed genes
 plt.axvline(2, color="black", linestyle="--")
 plt.axvline(-2, color="black", linestyle="--")
 plt.legend()
@@ -135,9 +138,10 @@ for i, gene in enumerate(AvD_up_reg_lab["gene_id"]):
 for i, gene in enumerate(AvD_down_reg_lab["gene_id"]):
     plt.annotate(gene, (AvD_down_reg_lab["log2FoldChange"].iloc[i], AvD_down_reg_lab["neg_log10_padj"].iloc[i]), size=7)
 
+
 # Annotate gene names at the extreme top, along the y-axis, with large neg_log10_padj values
 # Filter significant up-regulated and down-regulated genes with large negative log10 adjusted p values
-AvD_reg_lab_top = AvD_data[AvD_data["neg_log10_padj"] >= 70]
+AvD_reg_lab_top = AvD_data[AvD_data["neg_log10_padj"] >= top_padj_threshold]
 
 # Annotate gene names along the y-axis
 for i, gene in enumerate(AvD_reg_lab_top["gene_id"]):
@@ -155,7 +159,7 @@ plt.scatter(x=GvD_down_reg["log2FoldChange"], y=GvD_down_reg["neg_log10_padj"], 
 plt.title("Condition 2 Volcano Plot", fontsize=15)
 plt.xlabel("Log2 Fold Change")
 plt.ylabel("-Log(adjusted pvalue)")
-plt.axhline(70, color="black", linestyle="--")
+plt.axhline(top_padj_threshold, color="black", linestyle="--") # top significantly expressed genes
 plt.axvline(2, color="black", linestyle="--")
 plt.axvline(-2, color="black", linestyle="--")
 plt.legend()
@@ -177,7 +181,7 @@ for i, gene in enumerate(GvD_down_reg_lab["gene_id"]):
 
 # Annotate gene names at the extreme top, along the y-axis, with large neg_log10_padj values
 # Filter significant up-regulated and down-regulated genes with large negative log10 p-adjusted values
-GvD_reg_lab_top = GvD_data[GvD_data["neg_log10_padj"] >= 70]
+GvD_reg_lab_top = GvD_data[GvD_data["neg_log10_padj"] >= top_padj_threshold]
 
 # Annotate gene names along the y-axis
 for i, gene in enumerate(GvD_reg_lab_top["gene_id"]):
