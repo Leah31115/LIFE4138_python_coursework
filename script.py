@@ -244,10 +244,12 @@ subset_GvD_reg_top["treatment_group"] = 'Condition_2'
 # Combine both significantly up-regulated and down-regulated genes into one dataframe for both conditions
 data_frames = [subset_AvD_reg_top, subset_GvD_reg_top]
 sig_genes = pd.concat(data_frames)
+round_sig_genes = sig_genes.round({"log2FoldChange": 3}) # Round log2FoldChange to 3dp
 print("\nHere are the significant up-regulated and down-regulated genes for both conditions:")
-print(sig_genes)
+print(round_sig_genes)
 # Save significant up-regulated and down-regulated genes for both conditions as a tsv file
-sig_genes.to_csv(new_dir / "top_differentially_expressed_genes.tsv", index=False, header=True, sep='\t')
+round_sig_genes.to_csv(new_dir / "top_differentially_expressed_genes.tsv", index=False, header=True, sep='\t')
+
 
 # Heatmap and Heirarchal clustering of the top differentially expressed genes, using log2FoldChange, to illustrate gene expression patterns and relationships across the conditions.
 # All mean values from both files are the same so used log2FoldChange instead
